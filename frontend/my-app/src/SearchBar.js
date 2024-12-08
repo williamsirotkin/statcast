@@ -42,14 +42,6 @@ function SearchBar() {
           </Button>
         </Box>
       </Box>
-      
-      {player && (
-        <Box className="flex justify-center mt-4">
-          <Typography variant="h6">
-            {player}
-          </Typography>
-        </Box>
-      )}
     </Box>
   );
 };

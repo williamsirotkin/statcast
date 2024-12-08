@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchBar from './SearchBar.js'
+import Stats from './Stats.js';
 
 
 function StatCast() {
@@ -12,6 +13,7 @@ function StatCast() {
         <br>
         </br>
         <SearchBar/>
+        <Stats/>
       </div>
   );
 };
