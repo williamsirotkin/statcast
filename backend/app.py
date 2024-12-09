@@ -85,8 +85,6 @@ def calcStats():
         exitVelosPitcher.append(sum(pitcherStatMap[pitcher]["exitVelo"]) / len(pitcherStatMap[pitcher]["exitVelo"]))
         AVGsPitcher.append(calcAvg(pitcherStatMap[pitcher]["OUTCOMES"]))
         OPSsPitcher.append(calcOps(pitcherStatMap[pitcher]["OUTCOMES"]))
-    print(AVGs)
-    print(OPSs)
 calcStats()
 
         
@@ -113,7 +111,6 @@ def playerList():
         players.add(hitter)
     for pitcher in pitcherNameMap:
         players.add(pitcher)
-    print(players)
 
     return list(players)
 
