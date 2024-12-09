@@ -12,9 +12,9 @@ To run the application from the home directory:
 
 5) cd to ./frontend/my-app
 
-6) Run npm i 
+6) Install node.js - https://nodejs.org/en/download/package-manager
 
-7) run npm start
+7) run npm i then npm start
 
 8) Disable CORS policy in browser
     a) You can run Safari and disable CORS by clicking on preferences -> Advanced -> Disable CORS or do it from develop menu
