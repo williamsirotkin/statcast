@@ -105,6 +105,18 @@ for data in battedBallData.iterrows():
 def hello():
     return 'Welcome to Statcast!'
 
+@app.route('/getData/playerList')
+def playerList():
+    players = set()
+
+    for hitter in hitterNameMap:
+        players.add(hitter)
+    for pitcher in pitcherNameMap:
+        players.add(pitcher)
+    print(players)
+
+    return list(players)
+
 @app.route('/getData/<player_name>')
 def getData(player_name):
     player_name = player_name.lower()
@@ -146,36 +158,36 @@ def displayData(data, playerType):
     if playerType == "hitter":
         return [
             {
-                "label": "Exit Velo",
+                "label": "Exit Velo (MPH)",
                 "value": exitVelo,
                 "percentile": calcPercentile(exitVelos, exitVelo)
             },
             {
                 "label": "AVG",
-                "value": AVG,
+                "value": float("%.3f" % AVG),
                 "percentile": calcPercentile(AVGs, AVG)
             },
             {
                 "label": "OPS",
-                "value": OPS,
+                "value": float("%.3f" % OPS),
                 "percentile": calcPercentile(OPSs, OPS)
             },
         ]
     return [
             {
-                "label": "Exit Velo",
+                "label": "Opponent Exit Velo (MPH)",
                 "value": exitVelo,
-                "percentile": calcPercentile(exitVelosPitcher, exitVelo)
+                "percentile": 100 - calcPercentile(exitVelosPitcher, exitVelo)
             },
             {
-                "label": "AVG",
-                "value": AVG,
-                "percentile": calcPercentile(AVGsPitcher, AVG)
+                "label": "Opponent AVG",
+                "value": float("%.3f" % AVG),
+                "percentile": 100 -calcPercentile(AVGsPitcher, AVG)
             },
             {
-                "label": "OPS",
-                "value": OPS,
-                "percentile": calcPercentile(OPSsPitcher, OPS)
+                "label": "Opponent OPS",
+                "value":float("%.3f" % OPS),
+                "percentile": 100 - calcPercentile(OPSsPitcher, OPS)
             },
         ]
 
