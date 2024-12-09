@@ -4,8 +4,12 @@ import ApiClient from './ApiClient';
 
 const api = new ApiClient('http://127.0.0.1:5000');
 
-const StatBar = ({label, value, maxValue }) => {
-    const percentage = Math.round((value / maxValue) * 100);
+const StatBar = ({label, value, percentile }) => {
+    const percentage = percentile;
+    const red = Math.round((percentage / 100) * 255);
+    const blue = Math.round(((100 - percentage) / 100) * 255);
+    const barColor = `rgb(${red}, 0, ${blue})`;
+
     return (
         <div style={{
             marginBottom: '20px',
@@ -16,8 +20,27 @@ const StatBar = ({label, value, maxValue }) => {
               justifyContent: 'space-between',
               marginBottom: '8px'
             }}>
-              <span style={{ fontWeight: 'bold' }}>{label}</span>
-              <span style={{ fontWeight: 'bold' }}>{value}</span>
+                <span style={{ fontWeight: 'bold' }}>{label}</span>
+              <span style={{ fontWeight: 'bold' }}>
+    {label.substring(0, 4) === "Exit" || label.substring(0, 13) === "Opponent Exit" ? 
+        Number(value).toFixed(1) : 
+        Number(value).toFixed(3).replace('0.', '.')}
+</span>
+            </div>
+
+            <div style={{ 
+               display: 'flex',
+               alignItems: 'center',
+               gap: '10px',
+               width: '100%'
+           }}>
+               <span style={{ 
+                   fontWeight: 'bold',
+                   minWidth: '100px',
+                   fontSize: '12px'
+               }}>
+                   {percentile}th percentile
+               </span>
             </div>
       
             <div style={{
@@ -33,7 +56,7 @@ const StatBar = ({label, value, maxValue }) => {
                 top: 0,
                 width: `${percentage}%`,
                 height: '100%',
-                backgroundColor: '#dc2626',
+                backgroundColor: barColor,
                 borderRadius: '4px'
               }} />
             </div>
@@ -54,7 +77,7 @@ const Stats = ({ player }) => {
                 setStats(data);
                 setError(null);
             } catch (err) {
-                setError(err.message);
+                setError("Player isn't in database, please try again");
             } finally {
                 setLoading(false);
             }
@@ -66,7 +89,7 @@ const Stats = ({ player }) => {
     }, [player]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div></div>;
     }
 
     if (error) {
@@ -96,7 +119,7 @@ const Stats = ({ player }) => {
                         key={index}
                         label={stat.label}
                         value={stat.value}
-                        maxValue={100} 
+                        percentile={stat.percentile} 
                     />
                 ))}
             </div>
