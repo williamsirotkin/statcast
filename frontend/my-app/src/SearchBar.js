@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
 
-function SearchBar() {
+function SearchBar({setPlayer}) {
   const [searchText, setSearchText] = useState('');
-  const [player, setPlayer] = useState('');
 
   const handleSearch = () => {
+    console.log(setPlayer)
     setPlayer(searchText);
   };
 
