@@ -4,11 +4,11 @@ To run the application from the home directory:
 
 1) cd ./backend
 
-2) pip3 install 
+2) Run ./backend.sh 
 
 3) cd ../frontend
 
-4) npm install
+4) Run ./frontend.sh
 
 5) Visit localhost:3000 for application (Backend runs on localhost:4000 but no need to visit there)
 
