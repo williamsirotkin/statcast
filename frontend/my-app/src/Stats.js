@@ -75,7 +75,6 @@ const Stats = ({ player }) => {
                 setLoading(true);
                 const data = await api.get('/getData/' + player);
                 setStats(data);
-                setError(null);
             } catch (err) {
                 setError("Player isn't in database, please try again");
             } finally {
