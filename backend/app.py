@@ -15,6 +15,79 @@ pitcherNameMap = {}
 exitVelos = []
 AVGs = []
 OPSs = []
+exitVelosPitcher = []
+AVGsPitcher = []
+OPSsPitcher = []
+hitterStatMap = {}
+pitcherStatMap = {}
+
+def calcPercentile(array, number):
+    count = 0
+    for i in range(len(array)):
+        if array[i] <= number:
+            count += 1
+    return max(1, int((count/len(array)) * 100))
+
+def calcStats():
+    def calcAvg(arrayOfOutcomes):
+        total = 0
+        length = len(arrayOfOutcomes)
+        for outcome in arrayOfOutcomes:
+            if outcome == 'Single' or outcome == 'Double' or outcome == 'Triple' or outcome == 'Home Run':
+                total += 1
+            if outcome == 'Sacrifice' or outcome == 'Undefined':
+                length -= 1
+        if length == 0:
+            return 0
+        return round(total / length, 3)
+        
+
+    def calcOps(arrayOfOutcomes):
+        total = 0
+        length = len(arrayOfOutcomes)
+        for outcome in arrayOfOutcomes:
+            if outcome == 'Single':
+                total +=1
+            if outcome == 'Double':
+                total += 2
+            if outcome == 'Triple':
+                total += 3
+            if outcome == 'HomeRun':
+                total += 4
+            if outcome == 'Sacrifice' or outcome == 'Undefined':
+                length -= 1
+        if length == 0:
+            return 0
+        return round(total / length, 3)
+
+    for data in battedBallData.iterrows():
+        data = data[1]
+        if data['BATTER_ID'] not in hitterStatMap:
+            hitterStatMap[data['BATTER_ID']] = {
+                "exitVelo": [],
+                "OUTCOMES": [],
+            }
+        if data['PITCHER_ID'] not in pitcherStatMap:
+            pitcherStatMap[data['PITCHER_ID']] = {
+                "exitVelo": [],
+                "OUTCOMES": [],
+            }
+        hitterStatMap[data['BATTER_ID']]["exitVelo"].append(data["EXIT_SPEED"])
+        hitterStatMap[data['BATTER_ID']]["OUTCOMES"].append(data["PLAY_OUTCOME"])
+        pitcherStatMap[data['PITCHER_ID']]["exitVelo"].append(data["EXIT_SPEED"])
+        pitcherStatMap[data['PITCHER_ID']]["OUTCOMES"].append(data["PLAY_OUTCOME"])
+    
+    for hitter in hitterStatMap:
+        exitVelos.append(sum(hitterStatMap[hitter]["exitVelo"]) / len(hitterStatMap[hitter]["exitVelo"]))
+        AVGs.append(calcAvg(hitterStatMap[hitter]["OUTCOMES"]))
+        OPSs.append(calcOps(hitterStatMap[hitter]["OUTCOMES"]))
+    for pitcher in pitcherStatMap:
+        exitVelosPitcher.append(sum(pitcherStatMap[pitcher]["exitVelo"]) / len(pitcherStatMap[pitcher]["exitVelo"]))
+        AVGsPitcher.append(calcAvg(pitcherStatMap[pitcher]["OUTCOMES"]))
+        OPSsPitcher.append(calcOps(pitcherStatMap[pitcher]["OUTCOMES"]))
+    print(AVGs)
+    print(OPSs)
+calcStats()
 
         
 for data in battedBallData.iterrows():
@@ -43,7 +116,7 @@ def getData(player_name):
             "error": "Internal server error, player not found",
         }), 500
 
-def displayData(data):
+def displayData(data, playerType):
     def isHit(outcome):
         if outcome == 'Single' or outcome == 'Double' or outcome == 'Triple' or outcome == 'Home Run':
             return 1
@@ -70,23 +143,41 @@ def displayData(data):
     exitVelo = round((exitVelo / counter), 1)
     AVG = round(AVG / counter, 3)
     OPS = round(OPS / counter, 3)
+    if playerType == "hitter":
+        return [
+            {
+                "label": "Exit Velo",
+                "value": exitVelo,
+                "percentile": calcPercentile(exitVelos, exitVelo)
+            },
+            {
+                "label": "AVG",
+                "value": AVG,
+                "percentile": calcPercentile(AVGs, AVG)
+            },
+            {
+                "label": "OPS",
+                "value": OPS,
+                "percentile": calcPercentile(OPSs, OPS)
+            },
+        ]
     return [
-        {
-            "label": "Exit Velo",
-            "value": exitVelo,
-            "percentile": "something"
-        },
-        {
-            "label": "AVG",
-            "value": AVG,
-            "percentile": "something"
-        },
-        {
-            "label": "OPS",
-            "value": OPS,
-            "percentile": "something"
-        },
-    ]
+            {
+                "label": "Exit Velo",
+                "value": exitVelo,
+                "percentile": calcPercentile(exitVelosPitcher, exitVelo)
+            },
+            {
+                "label": "AVG",
+                "value": AVG,
+                "percentile": calcPercentile(AVGsPitcher, AVG)
+            },
+            {
+                "label": "OPS",
+                "value": OPS,
+                "percentile": calcPercentile(OPSsPitcher, OPS)
+            },
+        ]
 
 
 def getDataForHitter(hitter_name):
@@ -98,7 +189,7 @@ def getDataForHitter(hitter_name):
         data = data[1]
         if data['BATTER_ID'] == int(hitter_id):
             returnData.append(data.to_dict())
-    return displayData(returnData)
+    return displayData(returnData, "hitter")
 
 
 def getDataForPitcher(pitcher_name):
@@ -111,7 +202,7 @@ def getDataForPitcher(pitcher_name):
         data = data[1]
         if data['PITCHER_ID'] == int(pitcher_id):
             returnData.append(data.to_dict())
-    return displayData(returnData)
+    return displayData(returnData, "pitcher")
 
 def convertNameToPlayerID(playerType, name):
     name = name.lower()
