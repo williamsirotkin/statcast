@@ -23,4 +23,4 @@ To run the application from the home directory:
 
 9) Go to localhost:3000
 
-10) search player in the player list and see their stats!
+10) search player in the player list and see their stats! (reload page if database error persists)
